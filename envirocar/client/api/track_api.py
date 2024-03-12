@@ -1,4 +1,6 @@
 import json
+from typing import Union, Dict
+
 import pandas as pd
 import geopandas as gpd
 
@@ -15,6 +17,18 @@ class TrackAPI:
 
     def __init__(self, api_client=None):
         self.api_client = api_client or DownloadClient()
+
+    def get_max_page(
+        self,
+        path: Union[TRACK_ENDPOINT, TRACKS_ENDPOINT, USERTRACKS_ENDPOINT],
+        params: Dict,
+    ):
+        result = self.api_client.download_links(RequestParam(path=path, params=params))
+        if result is not None and "last" in result:
+            # 'http://envirocar.org/tracks?limit=100&during=2020-04-01T00%3A00%3A00Z%2C2021-04-15T00%3A00%3A00Z&page=46'
+            # Extract and return the page numer
+            return int(result["last"]["url"].split("page=")[-1])
+        return 1
 
     def get_tracks(
         self,
@@ -42,13 +56,17 @@ class TrackAPI:
         download_requests = []
         current_results = 0
         current_page = 1
+        request_params = {"limit": page_limit, "page": current_page}
+        if bbox:
+            request_params.update(bbox.param)
+        if time_interval:
+            request_params.update(time_interval.param)
+        if num_results is None or "all" in num_results:
+            num_results = (
+                self.get_max_page(path=path, params=request_params) * page_limit
+            )
         while current_results < num_results:
-            request_params = {"limit": page_limit, "page": current_page}
-            if bbox:
-                request_params.update(bbox.param)
-
-            if time_interval:
-                request_params.update(time_interval.param)
+            request_params.update({"page": current_page})
 
             request = RequestParam(path=path, params=request_params)
             download_requests.append(request)
