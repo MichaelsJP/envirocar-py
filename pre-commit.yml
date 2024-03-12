@@ -1,0 +1,44 @@
+# See repositories to check each declared pre-commit hook
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files
+        args: [ '--maxkb=1024' ]
+      - id: detect-private-key
+      - id: trailing-whitespace
+        exclude: ^.venv*|out|refs.bib
+      - id: check-yaml
+        exclude: ^.venv*|out
+      - id: check-json
+        exclude: ^.venv*|out
+      - id: check-ast # Check for general parse errors in Python code
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-vcs-permalinks
+      - id: debug-statements
+      - id: destroyed-symlinks
+      - id: fix-byte-order-marker
+      - id: fix-encoding-pragma
+        args: [ "--remove" ]
+      - id: end-of-file-fixer
+        exclude: ^.venv*|out
+      - id: forbid-new-submodules
+      - id: mixed-line-ending
+        args: [ '--fix=lf' ]
+        description: Forces to replace line ending by the UNIX 'lf' character.
+        exclude: ^.venv*|out
+      - id: pretty-format-json
+        args: [ '--no-sort-keys', '--autofix' ]
+        exclude: ^.venv*|out|clip.geojson
+      - id: no-commit-to-branch
+        args: [ --branch, main ]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.1
+    hooks:
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
