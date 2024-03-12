@@ -3,7 +3,7 @@ virtualenv allows you to manage separate package installation for different proj
 
 
 ## Creating the environment
-Create some folder where you want to make your project and virtualenv available. 
+Create some folder where you want to make your project and virtualenv available.
 ```
 mkdir ./dev/envirocar/some_dir && cd ./dev/envirocar/some_dir
 ```
@@ -34,7 +34,7 @@ pip install --upgrade pip
 ```
 
 ## Install the required dependencies
-Install the python envoricar python package. This package will also install all necessary libraries such as Pandas or GeoPandas. 
+Install the python envoricar python package. This package will also install all necessary libraries such as Pandas or GeoPandas.
 ```
 pip install envirocar-py --upgrade
 ```

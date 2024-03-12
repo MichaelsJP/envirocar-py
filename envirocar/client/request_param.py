@@ -1,5 +1,5 @@
 class BboxSelector:
-    """ Class for creating bounding box requests """
+    """Class for creating bounding box requests"""
 
     def __init__(self, bbox: [float]):
         self.min_x = bbox[0]
@@ -17,7 +17,8 @@ class BboxSelector:
 
     @property
     def param(self):
-        return { 'bbox': f'{self.min_x},{self.min_y},{self.max_x},{self.max_y}' }
+        return {"bbox": f"{self.min_x},{self.min_y},{self.max_x},{self.max_y}"}
+
 
 class TimeSelector:
     def __init__(self, start_time=None, end_time=None):
@@ -26,12 +27,12 @@ class TimeSelector:
 
     @property
     def param(self):
-        if self.start_time and self.end_time==None:
-            return { 'after': f'{self.start_time}' }
-        elif self.start_time==None and self.end_time:
-            return { 'before': f'{self.end_time}' }
+        if self.start_time and self.end_time is None:
+            return {"after": f"{self.start_time}"}
+        elif self.start_time is None and self.end_time:
+            return {"before": f"{self.end_time}"}
         elif self.start_time and self.end_time:
-            return { 'during': f'{self.start_time},{self.end_time}' }
+            return {"during": f"{self.start_time},{self.end_time}"}
 
 
 class RequestParam:

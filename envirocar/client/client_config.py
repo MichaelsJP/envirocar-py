@@ -1,12 +1,10 @@
-
 class ECConfig:
-
     class _ECConfig:
         CONFIG_PARAMS = {
             "ec_base_url": "https://envirocar.org/api/stable/",
             "ec_username": "",
             "ec_password": "",
-            "number_of_processes": 4
+            "number_of_processes": 4,
         }
 
         def __init__(self):
@@ -23,4 +21,3 @@ class ECConfig:
             ECConfig._instance = self._ECConfig()
         for item in ECConfig._instance.CONFIG_PARAMS:
             setattr(self, item, getattr(ECConfig._instance, item))
-        

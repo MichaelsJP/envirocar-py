@@ -5,6 +5,6 @@ dependencies:
   - ipykernel
   - python=3.6
   - geopandas
-  - pip 
+  - pip
   - pip:
     - envirocar-py
