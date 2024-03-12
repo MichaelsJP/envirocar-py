@@ -1,0 +1,68 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'poetry'
+      - name: Install dependencies
+        run: |
+          poetry install --no-root
+      - name: Load cached tox
+        uses: actions/cache@v3
+        with:
+          path: .tox
+          key: tox-lint-poetry-1.2.2-python-3.10-${{ hashFiles('**/poetry.lock') }}
+      - name: Load cached pre-commit
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit/
+          key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Run tox lint
+        run: |
+          poetry run tox -e lint-py310
+  pytests:
+    needs:
+      - lint
+    strategy:
+      fail-fast: true
+      matrix:
+        config:
+          - python-version: '3.10'
+            tox: py310
+          - python-version: '3.11'
+            tox: py311
+        poetry-version: [ 1.8.2 ]
+        os: [ ubuntu-22.04 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: |
+          pipx install poetry
+      - uses: actions/setup-python@v5
+      - name: Set up testing Python ${{ matrix.config.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.config.python-version }}
+          cache: 'poetry'
+      - name: Install dependencies
+        run: poetry install
+      - name: Load cached tox
+        uses: actions/cache@v3
+        with:
+          path: .tox
+          key: tox-${{ matrix.os }}-poetry-${{ matrix.poetry-version }}-python-${{ matrix.config.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Run tox
+        run: |
+          poetry run tox -e pytest-${{ matrix.config.tox }}
