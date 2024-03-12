@@ -1,17 +1,16 @@
+import concurrent.futures
 import logging
+import warnings
 from typing import Dict
+from urllib.parse import urljoin
 
 import requests
 from requests.auth import HTTPBasicAuth
 
-import warnings
-import concurrent.futures
-from urllib.parse import urljoin
-
+from ..exceptions import HttpFailedException
 from .client_config import ECConfig
 from .request_param import RequestParam
 from .utils import handle_error_status
-from ..exceptions import HttpFailedException
 
 LOG = logging.getLogger(__name__)
 

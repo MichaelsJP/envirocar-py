@@ -1,11 +1,11 @@
 import json
-from typing import Union, Dict
+from typing import Dict, Union
 
-import pandas as pd
 import geopandas as gpd
+import pandas as pd
 
-from ..request_param import RequestParam, BboxSelector, TimeSelector
 from ..download_client import DownloadClient
+from ..request_param import BboxSelector, RequestParam, TimeSelector
 
 
 class TrackAPI:
