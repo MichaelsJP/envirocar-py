@@ -1,4 +1,6 @@
 import logging
+from typing import Dict
+
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -42,6 +44,27 @@ class DownloadClient:
         if decoder:
             return decoder(result_list)
         return result_list
+
+    @handle_error_status
+    def download_links(self, download_request: RequestParam) -> Dict:
+        url = urljoin(self.config.ec_base_url, download_request.path)
+
+        # set BasicAuth parameters
+        auth = None
+        if self.config.ec_username and self.config.ec_password:
+            auth = HTTPBasicAuth(self.config.ec_username, self.config.ec_password)
+
+        response = requests.request(
+            download_request.method,
+            url=url,
+            auth=auth,
+            headers=download_request.headers,
+            params=download_request.params,
+        )
+
+        response.raise_for_status()
+        LOG.info("Successfully downloaded %s", url)
+        return response.links
 
     @handle_error_status
     def _download(self, download_request: RequestParam):
