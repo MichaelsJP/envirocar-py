@@ -1,7 +1,7 @@
 import requests
 
-from .request_param import RequestParam
 from ..exceptions import HttpFailedException, NotAuthorizedException
+from .request_param import RequestParam
 
 
 def handle_error_status(http_download):

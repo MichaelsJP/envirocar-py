@@ -1,4 +1,5 @@
 import unittest
+
 import geopandas as gpd
 
 from src.envirocar.client.api.track_api import TrackAPI

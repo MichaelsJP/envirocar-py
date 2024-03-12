@@ -1,7 +1,7 @@
 import pathlib
 import unittest
 
-from src.envirocar.client.api.track_api import _parse_tracks_list_df, _parse_track_df
+from src.envirocar.client.api.track_api import _parse_track_df, _parse_tracks_list_df
 
 script_path = pathlib.Path(__file__).parent.resolve()
 
