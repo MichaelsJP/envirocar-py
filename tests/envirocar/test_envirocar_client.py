@@ -1,11 +1,10 @@
 import unittest
 import geopandas as gpd
 
-from envirocar import BboxSelector
-
-from envirocar.client.client_config import ECConfig
-from envirocar.client.download_client import DownloadClient
-from envirocar.client.api.track_api import TrackAPI
+from src.envirocar.client.api.track_api import TrackAPI
+from src.envirocar.client.client_config import ECConfig
+from src.envirocar.client.download_client import DownloadClient
+from src.envirocar.client.request_param import BboxSelector
 
 
 class TestDownloadClient(unittest.TestCase):

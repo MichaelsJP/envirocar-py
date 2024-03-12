@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Julian Psotta <julianpsotta@gmail.com>"]
 readme = "README.md"
+packages = [{ include = "envirocar", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -15,11 +16,23 @@ matplotlib = "^3.8.3"
 pydeck = "^0.8.0"
 ipython = "^8.22.2"
 folium = "^0.16.0"
-jupyter = "^1.0.0"
 
+# extras
+[tool.poetry.extras]
+jupyterlab = ["jupyterlab"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
+pytest-xdist = "^3.5.0"
+pytest-cov = "^4.1.0"
+coverage = { version = "^7.3.4", extras = ["toml"] }
+
+[tool.coverage.run]
+omit = ["tests/*"]
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = 20 # Warnings
 
 [build-system]
 requires = ["poetry-core"]

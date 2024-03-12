@@ -1,17 +1,20 @@
+import pathlib
 import unittest
 
-from envirocar.client.api.track_api import _parse_track_df, _parse_tracks_list_df
+from src.envirocar.client.api.track_api import _parse_tracks_list_df, _parse_track_df
+
+script_path = pathlib.Path(__file__).parent.resolve()
 
 
 class TestDecoding(unittest.TestCase):
     def setUp(self):
-        with open("tests/files/tracks.json", "r") as myfile:
+        with open(script_path.joinpath("../files/tracks.json"), "r") as myfile:
             self.tracks_list_json = myfile.read()
 
         self.tracks = []
-        with open("tests/files/track_1.json", "r") as track1:
+        with open(script_path.joinpath("../files/track_1.json"), "r") as track1:
             self.tracks.append(track1.read())
-        with open("tests/files/track_2.json", "r") as track2:
+        with open(script_path.joinpath("../files/track_2.json"), "r") as track2:
             self.tracks.append(track2.read())
 
     def test_tracks_list_decoding(self):
