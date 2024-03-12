@@ -61,14 +61,14 @@ class TrackAPI:
             request_params.update(bbox.param)
         if time_interval:
             request_params.update(time_interval.param)
-        if num_results is None or "all" in num_results:
+        if num_results is None:
             num_results = (
                 self.get_max_page(path=path, params=request_params) * page_limit
             )
         while current_results < num_results:
             request_params.update({"page": current_page})
 
-            request = RequestParam(path=path, params=request_params)
+            request = RequestParam(path=path, params=request_params.copy())
             download_requests.append(request)
 
             current_results += page_limit
