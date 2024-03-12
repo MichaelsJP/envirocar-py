@@ -17,6 +17,12 @@ class TestDownloadClient(unittest.TestCase):
         tracks = self.track_api.get_tracks(num_results=4, page_limit=3)
         self.assertEqual(len(tracks["track.id"].unique()), 4)
 
+    def test_get_max_page(self):
+        path = self.track_api.TRACKS_ENDPOINT
+        params = {"limit": 100, "page": 1}
+        max_page = self.track_api.get_max_page(path=path, params=params)
+        self.assertTrue(max_page > 1)
+
     def test_bbox_download(self):
         bbox = BboxSelector(
             [
