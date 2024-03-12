@@ -17,7 +17,6 @@ pydeck = "^0.8.0"
 ipython = "^8.22.2"
 folium = "^0.16.0"
 
-# extras
 [tool.poetry.extras]
 jupyterlab = ["jupyterlab"]
 
@@ -26,8 +25,7 @@ pytest = "^8.1.1"
 pytest-xdist = "^3.5.0"
 pytest-cov = "^4.1.0"
 coverage = { version = "^7.3.4", extras = ["toml"] }
-isort = "^5.13.2"
-autoflake = "^2.3.0"
+tox = "^4.14.1"
 
 [tool.coverage.run]
 omit = ["tests/*"]
