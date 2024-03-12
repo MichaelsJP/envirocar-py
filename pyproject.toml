@@ -17,9 +17,7 @@ pydeck = "^0.8.0"
 ipython = "^8.22.2"
 folium = "^0.16.0"
 pre-commit = "^3.6.2"
-
-[tool.poetry.extras]
-jupyterlab = ["jupyterlab"]
+jupyter = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
