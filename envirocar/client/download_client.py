@@ -1,10 +1,9 @@
 import logging
-import requests 
+import requests
 from requests.auth import HTTPBasicAuth
 
 import warnings
 import concurrent.futures
-import json
 from urllib.parse import urljoin
 
 from .client_config import ECConfig
@@ -14,22 +13,27 @@ from ..exceptions import HttpFailedException
 
 LOG = logging.getLogger(__name__)
 
-class DownloadClient:
 
+class DownloadClient:
     def __init__(self, *, config=None):
         self.config = config or ECConfig()
 
     def download(self, download_requests, decoder=None):
-        if (isinstance(download_requests, RequestParam)):
+        if isinstance(download_requests, RequestParam):
             download_requests = [download_requests]
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.config.number_of_processes) as executor:
-            download_list = [executor.submit(self._download, request) for request in download_requests]
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.config.number_of_processes
+        ) as executor:
+            download_list = [
+                executor.submit(self._download, request)
+                for request in download_requests
+            ]
 
         result_list = []
         for future in download_list:
             try:
-                decoded_data = future.result().decode('utf-8')
+                decoded_data = future.result().decode("utf-8")
                 result_list.append(decoded_data)
             except HttpFailedException as e:
                 warnings.warn(str(e))
@@ -42,7 +46,7 @@ class DownloadClient:
     @handle_error_status
     def _download(self, download_request: RequestParam):
         url = urljoin(self.config.ec_base_url, download_request.path)
-        
+
         # set BasicAuth parameters
         auth = None
         if self.config.ec_username and self.config.ec_password:
@@ -50,10 +54,10 @@ class DownloadClient:
 
         response = requests.request(
             download_request.method,
-            url= url,
+            url=url,
             auth=auth,
             headers=download_request.headers,
-            params=download_request.params
+            params=download_request.params,
         )
 
         response.raise_for_status()
