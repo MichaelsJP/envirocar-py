@@ -18,6 +18,9 @@ ipython = "^8.22.2"
 folium = "^0.16.0"
 pre-commit = "^3.6.2"
 jupyter = "^1.0.0"
+tqdm = "^4.66.2"
+polars = { version = "^0.20.15", extras = ["pyarrow", "pandas"] }
+geopolars = "^0.1.0a4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"

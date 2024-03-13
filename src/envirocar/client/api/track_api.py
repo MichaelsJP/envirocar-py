@@ -1,9 +1,8 @@
 import json
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 import geopandas as gpd
 import pandas as pd
-
 from ..download_client import DownloadClient
 from ..request_param import BboxSelector, RequestParam, TimeSelector
 
@@ -37,7 +36,8 @@ class TrackAPI:
         time_interval: TimeSelector = None,
         num_results=10,
         page_limit=100,
-    ):
+        skip_tracks: List[str] = None,
+    ) -> pd.DataFrame:
         """Handles queries against the enviroCar api
 
         Keyword Arguments:
@@ -75,17 +75,23 @@ class TrackAPI:
             current_page += 1
 
         # request for /tracks
-        tracks_meta_df = self.api_client.download(
+        print("Downloading tracks metadata...")
+        tracks_meta_df: pd.DataFrame = self.api_client.download(
             download_requests, decoder=_parse_tracks_list_df
         )
+        # filter out tracks that are already downloaded
+        if skip_tracks:
+            tracks_meta_df = tracks_meta_df[
+                ~tracks_meta_df["track.id"].isin(skip_tracks)
+            ]
         tracks_meta_df = tracks_meta_df[:num_results]
 
         if not tracks_meta_df.empty:
+            print("Downloading tracks...")
             ids = tracks_meta_df["track.id"].values
-            tracks_df = self._get_tracks_by_ids(ids)
-            return tracks_df
+            return self._get_tracks_by_ids(ids)
 
-        return gpd.GeoDataFrame()
+        return pd.DataFrame()
 
     def get_track(self, track_id: str):
         return self.api_client.download(
@@ -107,7 +113,7 @@ class TrackAPI:
             return self.TRACK_ENDPOINT.format(trackid)
 
 
-def _parse_tracks_list_df(tracks_jsons):
+def _parse_tracks_list_df(tracks_jsons) -> pd.DataFrame:
     if not isinstance(tracks_jsons, list):
         tracks_jsons = [tracks_jsons]
 
@@ -122,11 +128,11 @@ def _parse_tracks_list_df(tracks_jsons):
     return tracks_meta_df
 
 
-def _parse_track_df(track_jsons):
+def _parse_track_df(track_jsons) -> pd.DataFrame:
     if not isinstance(track_jsons, list):
         track_jsons = [track_jsons]
 
-    tracks_df = gpd.GeoDataFrame()
+    tracks_df = pd.DataFrame()
     for track_json in track_jsons:
         # read properties
         car_df = pd.json_normalize(json.loads(track_json)["properties"])
@@ -138,7 +144,9 @@ def _parse_track_df(track_jsons):
         track_df = track_df.join(pd.json_normalize(track_df["phenomenons"])).drop(
             ["phenomenons"], axis=1
         )
-
+        track_df.insert(0, "x", track_df.geometry.x)
+        track_df.insert(0, "y", track_df.geometry.y)
+        track_df.drop("geometry", inplace=True, axis=1)
         # combine dataframes
         car_df = pd.concat([car_df] * len(track_df.index), ignore_index=True)
         tracks_df = pd.concat([tracks_df, track_df.join(car_df)])

@@ -1,6 +1,10 @@
 import concurrent.futures
 import logging
 import warnings
+from pathlib import Path
+
+import pandas as pd
+from tqdm import tqdm
 from typing import Dict
 from urllib.parse import urljoin
 
@@ -19,22 +23,24 @@ class DownloadClient:
     def __init__(self, *, config=None):
         self.config = config or ECConfig()
 
-    def download(self, download_requests, decoder=None):
+    def download(self, download_requests, decoder=None) -> pd.DataFrame:
         if isinstance(download_requests, RequestParam):
             download_requests = [download_requests]
 
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=self.config.number_of_processes
         ) as executor:
-            download_list = [
-                executor.submit(self._download, request)
-                for request in download_requests
-            ]
+            download_list = list(
+                tqdm(
+                    executor.map(self._download, download_requests),
+                    total=len(download_requests),
+                )
+            )
 
         result_list = []
-        for future in download_list:
+        for result in download_list:
             try:
-                decoded_data = future.result().decode("utf-8")
+                decoded_data = result.decode("utf-8")
                 result_list.append(decoded_data)
             except HttpFailedException as e:
                 warnings.warn(str(e))
@@ -42,7 +48,7 @@ class DownloadClient:
 
         if decoder:
             return decoder(result_list)
-        return result_list
+        return pd.DataFrame(result_list)
 
     @handle_error_status
     def download_links(self, download_request: RequestParam) -> Dict:
@@ -85,3 +91,13 @@ class DownloadClient:
         response.raise_for_status()
         LOG.info("Successfully downloaded %s", url)
         return response.content
+
+    @handle_error_status
+    def _download_and_save(
+        self, download_request: RequestParam, output_folder: Path
+    ) -> Path:
+        content = self._download(download_request)
+        file_path = output_folder / download_request.path
+        with open(file_path, "wb") as file:
+            file.write(content)
+        return file_path
