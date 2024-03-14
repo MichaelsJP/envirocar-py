@@ -28,17 +28,19 @@ class DownloadClient:
     ) -> pd.DataFrame:
         if isinstance(download_requests, RequestParam):
             download_requests = [download_requests]
-
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=self.config.number_of_processes
-        ) as executor:
-            download_list = list(
-                tqdm(
-                    executor.map(self._download, download_requests),
-                    total=len(download_requests),
+        try:
+            with concurrent.futures.ThreadPoolExecutor(
+                max_workers=self.config.number_of_processes
+            ) as executor:
+                download_list = list(
+                    tqdm(
+                        executor.map(self._download, download_requests),
+                        total=len(download_requests),
+                    )
                 )
-            )
-
+        except Exception as e:
+            print("Error in download: ", e)
+            download_list = []
         result_list = []
         for result in download_list:
             try:

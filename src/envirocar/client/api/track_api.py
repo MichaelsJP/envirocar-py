@@ -115,7 +115,7 @@ class TrackAPI:
             return self.TRACK_ENDPOINT.format(trackid)
 
 
-def _parse_tracks_list_df(tracks_jsons) -> pd.DataFrame:
+def _parse_tracks_list_df(tracks_jsons, post_process: bool = False) -> pd.DataFrame:
     if not isinstance(tracks_jsons, list):
         tracks_jsons = [tracks_jsons]
 
