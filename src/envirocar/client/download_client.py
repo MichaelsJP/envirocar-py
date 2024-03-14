@@ -23,7 +23,7 @@ class DownloadClient:
     def __init__(self, *, config=None):
         self.config = config or ECConfig()
 
-    def download(self, download_requests, decoder=None) -> pd.DataFrame:
+    def download(self, download_requests, decoder=None, post_process: bool = False) -> pd.DataFrame:
         if isinstance(download_requests, RequestParam):
             download_requests = [download_requests]
 
@@ -47,7 +47,7 @@ class DownloadClient:
                 result_list.append(None)
 
         if decoder:
-            return decoder(result_list)
+            return decoder(result_list, post_process=post_process)
         return pd.DataFrame(result_list)
 
     @handle_error_status
