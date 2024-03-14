@@ -1,6 +1,6 @@
 import unittest
 
-import geopandas as gpd
+import pandas as pd
 
 from src.envirocar.client.api.track_api import TrackAPI
 from src.envirocar.client.client_config import ECConfig
@@ -46,7 +46,7 @@ class TestDownloadClient(unittest.TestCase):
             ]
         )
         tracks = self.track_api.get_tracks(bbox=bbox, num_results=3)
-        self.assertTrue(isinstance(tracks, gpd.GeoDataFrame))
+        self.assertTrue(isinstance(tracks, pd.DataFrame))
         self.assertTrue(tracks.empty)
 
 
