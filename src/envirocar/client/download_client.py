@@ -23,7 +23,9 @@ class DownloadClient:
     def __init__(self, *, config=None):
         self.config = config or ECConfig()
 
-    def download(self, download_requests, decoder=None, post_process: bool = False) -> pd.DataFrame:
+    def download(
+        self, download_requests, decoder=None, post_process: bool = False
+    ) -> pd.DataFrame:
         if isinstance(download_requests, RequestParam):
             download_requests = [download_requests]
 

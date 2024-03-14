@@ -18,9 +18,9 @@ class TrackAPI:
         self.api_client = api_client or DownloadClient()
 
     def get_max_page(
-            self,
-            path: Union[TRACK_ENDPOINT, TRACKS_ENDPOINT, USERTRACKS_ENDPOINT],
-            params: Dict,
+        self,
+        path: Union[TRACK_ENDPOINT, TRACKS_ENDPOINT, USERTRACKS_ENDPOINT],
+        params: Dict,
     ):
         result = self.api_client.download_links(RequestParam(path=path, params=params))
         if result is not None and "last" in result:
@@ -30,13 +30,13 @@ class TrackAPI:
         return 1
 
     def get_tracks(
-            self,
-            username=None,
-            bbox: BboxSelector = None,
-            time_interval: TimeSelector = None,
-            num_results=10,
-            page_limit=100,
-            skip_tracks: List[str] = None,
+        self,
+        username=None,
+        bbox: BboxSelector = None,
+        time_interval: TimeSelector = None,
+        num_results=10,
+        page_limit=100,
+        skip_tracks: List[str] = None,
     ) -> pd.DataFrame:
         """Handles queries against the enviroCar api
 
@@ -63,7 +63,7 @@ class TrackAPI:
             request_params.update(time_interval.param)
         if num_results is None:
             num_results = (
-                    self.get_max_page(path=path, params=request_params) * page_limit
+                self.get_max_page(path=path, params=request_params) * page_limit
             )
         while current_results < num_results:
             request_params.update({"page": current_page})
@@ -95,7 +95,9 @@ class TrackAPI:
 
     def get_track(self, track_id: str):
         return self.api_client.download(
-            RequestParam(path=self._get_path(trackid=track_id)), decoder=_parse_track_df, post_process=True
+            RequestParam(path=self._get_path(trackid=track_id)),
+            decoder=_parse_track_df,
+            post_process=True,
         )
 
     def _get_tracks_by_ids(self, ids: [str]):
@@ -127,38 +129,60 @@ def _parse_tracks_list_df(tracks_jsons) -> pd.DataFrame:
 
     return tracks_meta_df
 
+
 def _post_process_df(df: pd.DataFrame) -> pd.DataFrame:
     # Only keep the columns below
-    columns_to_keep = ["x", "y", "time", "Speed.value", "GPS Accuracy.value",
-                       "GPS Speed.value", "track.begin", "track.end", "track.id", "track.length"]
+    columns_to_keep = [
+        "x",
+        "y",
+        "time",
+        "Speed.value",
+        "GPS Accuracy.value",
+        "GPS Speed.value",
+        "track.begin",
+        "track.end",
+        "track.id",
+        "track.length",
+    ]
     # remove columns not in the df
     columns_to_keep = [col for col in columns_to_keep if col in df.columns]
     df = df[columns_to_keep]
-    if 'x' in df.columns:
+    if "x" in df.columns:
         df["x"] = pd.to_numeric(df["x"])
-    if 'y' in df.columns:
+    if "y" in df.columns:
         df["y"] = pd.to_numeric(df["y"])
-    if 'time' in df.columns:
+    if "time" in df.columns:
         df["time"] = pd.to_datetime(df["time"])
-    if 'Speed.value' in df.columns:
+    if "Speed.value" in df.columns:
         df["speed_value"] = pd.to_numeric(df["Speed.value"])
-    if 'GPS Accuracy.value' in df.columns:
+    if "GPS Accuracy.value" in df.columns:
         df["gps_accuracy_value"] = pd.to_numeric(df["GPS Accuracy.value"])
-    if 'GPS Speed.value' in df.columns:
+    if "GPS Speed.value" in df.columns:
         df["gps_speed_value"] = pd.to_numeric(df["GPS Speed.value"])
-    if 'track.begin' in df.columns:
+    if "track.begin" in df.columns:
         df["track_begin"] = pd.to_datetime(df["track.begin"])
-    if 'track.end' in df.columns:
+    if "track.end" in df.columns:
         df["track_end"] = pd.to_datetime(df["track.end"])
-    if 'track.length' in df.columns:
+    if "track.length" in df.columns:
         df["track_length"] = pd.to_numeric(df["track.length"])
     df["track_id"] = df["track.id"].astype(dtype="string")
-    new_columns_to_keep = ["x", "y", "time", "speed_value", "gps_accuracy_value",
-                           "gps_speed_value", "track_begin", "track_end", "track_length", "track_id"]
+    new_columns_to_keep = [
+        "x",
+        "y",
+        "time",
+        "speed_value",
+        "gps_accuracy_value",
+        "gps_speed_value",
+        "track_begin",
+        "track_end",
+        "track_length",
+        "track_id",
+    ]
     # remove columns not in the df
     new_columns_to_keep = [col for col in new_columns_to_keep if col in df.columns]
     # only keep the new columns above
     return df[new_columns_to_keep]
+
 
 def _parse_track_df(track_jsons, post_process: bool = False) -> pd.DataFrame:
     if not isinstance(track_jsons, list):
